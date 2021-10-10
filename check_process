@@ -4,14 +4,12 @@
 		set -euxo
 		if [ "$FROM_COMMIT" == "adb788162e27a843d52582cb03106861e1b17c9c" ]
 		then
-			systemctl status meilisearch
-			sleep 5
 			api_key="X-Meili-API-Key: YUNOHOST-API-KEY-202020201456452135"
-                	curl "http://localhost:3500" --header "$api_key"
-			curl -k --fail -X POST "https://$SUBDOMAIN/indexes" --data '{"uid": "test", "primaryKey": "id"}' --header "$api_key"
-			update_id=$(curl -k --fail -X POST "https://$SUBDOMAIN/indexes/test/documents" --data '[{"id":"doc1","description":"foo"},{"id":"doc2","description":"foo2"]' --header "$api_key" | jq -r ".updateId")
+                	curl "http://localhost:8095" --header "$api_key"
+			curl -k --fail -X POST "http://localhost:8095/indexes" --data '{"uid": "test", "primaryKey": "id"}' --header "$api_key"
+			update_id=$(curl -k --fail -X POST "http://localhost:8095/indexes/test/documents" --data '[{"id":"doc1","description":"foo"},{"id":"doc2","description":"foo2"]' --header "$api_key" | jq -r ".updateId")
 			sleep 1
-			nb_documents=$(curl --silent --fail -X GET "https://$SUBDOMAIN/indexes/test/documents" --header "$api_key" | jq -r ". | length")
+			nb_documents=$(curl --silent --fail -X GET "http://localhost:8095/indexes/test/documents" --header "$api_key" | jq -r ". | length")
 			if [ "$nb_documents" -eq 2 ]
 			then
 				echo "Expected to have 2 documents"
